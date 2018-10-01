@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "target": "###ECMASCRIPT###",
+        "module": "system",
+        "allowJs" : false,
+        "declaration": true,
+        "inlineSourceMap": false,
+        "sourceMap": ###SOURCEMAP###,
+        "outFile": "###OUTFILE###"
+    },
+    "include": [
+        "assets/**/*"
+    ]    
+}
