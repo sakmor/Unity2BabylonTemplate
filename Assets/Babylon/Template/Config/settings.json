@@ -3,7 +3,7 @@
   "EcmaScriptVersion": 0,
   "HostPreviewType": 0,
   "BuildJavaScript": true,
-  "CompileTypeScript": false,
+  "CompileTypeScript": true,
   "FirelightAudio": false,
   "FirelightAudioMode": 0,
   "FirelightDebugMode": false,
