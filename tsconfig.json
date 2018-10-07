@@ -7,7 +7,7 @@
         "declaration": true,
         "inlineSourceMap": false,
         "sourceMap": false,
-        "outFile": "D:/BabylonJS/Export/debug/BabylonJS.js"
+        "outFile": "C:/Users/sakmo/Documents/Unity2BabylonTemplate/Export/debug/BabylonJS.js"
     },
     "include": [
         "assets/**/*"

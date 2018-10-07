@@ -3,7 +3,7 @@
   "EcmaScriptVersion": 0,
   "HostPreviewType": 0,
   "BuildJavaScript": true,
-  "CompileTypeScript": true,
+  "CompileTypeScript": false,
   "FirelightAudio": false,
   "FirelightAudioMode": 0,
   "FirelightDebugMode": false,
@@ -55,7 +55,7 @@
   "DefaultScriptPath": "scripts",
   "DefaultServerPort": 8888,
   "DefaultSceneName": "default",
-  "DefaultTypeScriptPath": "C:\\Users\\sam_wang\\AppData\\Roaming\\npm\\node_modules\\typescript\\bin\\tsc",
+  "DefaultTypeScriptPath": "C:\\Users\\sakmo\\AppData\\Roaming\\npm\\node_modules\\typescript\\bin\\tsc",
   "DefaultNodeRuntimePath": "C:\\Program Files\\nodejs\\node.exe",
   "DefaultWindowsLaunchMode": 0,
   "SplashScreenColor": [
