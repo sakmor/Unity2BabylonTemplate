@@ -4,8 +4,13 @@ declare module PROJECT {
         protected ready(): void;
         protected start(): void;
         protected update(): void;
+        private textUpdate;
+        protected timeCountDown(): void;
         protected after(): void;
         protected destroy(): void;
+        protected resetGame(): void;
+        protected buttonDownFunction(): void;
+        protected startCountdown(): void;
         protected createGUI(): void;
         protected deviceMotion(): void;
     }
