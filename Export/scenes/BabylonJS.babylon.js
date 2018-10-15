@@ -74,12 +74,21 @@ var PROJECT;
 /* Babylon Scene Controller Template */
 (function (PROJECT) {
     var AdvancedTexture;
-    var Text1, GameTimeText, Button, CountDownText;
+    var Text1, Text2, GameTimeText, CountDownText;
+    var ButtonStart, ButtonMenu;
     var OrientationX, OrientationY, OrientationZ;
     var MotionX, MotionY, MotionZ;
     var GameTime;
-    var IsGamePlaying;
     var GameBeginTimeLong;
+    var GameState;
+    var TargetOrientationX, TargetOrientationY, TargetOrientationZ;
+    var enumGameState;
+    (function (enumGameState) {
+        enumGameState[enumGameState["GameMenu"] = 0] = "GameMenu";
+        enumGameState[enumGameState["GameCountDown"] = 1] = "GameCountDown";
+        enumGameState[enumGameState["GamePlaying"] = 2] = "GamePlaying";
+        enumGameState[enumGameState["GameTimesUp"] = 3] = "GameTimesUp";
+    })(enumGameState || (enumGameState = {}));
     var GameMesterComponent = /** @class */ (function (_super) {
         __extends(GameMesterComponent, _super);
         function GameMesterComponent(owner, scene, tick, propertyBag) {
@@ -91,14 +100,45 @@ var PROJECT;
             // Scene execute when ready
         };
         GameMesterComponent.prototype.start = function () {
-            IsGamePlaying = false;
+            GameState = enumGameState.GameMenu;
             GameBeginTimeLong = 10;
-            this.resetGame();
             this.createGUI();
             this.deviceMotion();
+            this.resetGame();
+        };
+        GameMesterComponent.prototype.randomIntFromInterval = function (min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
         };
         GameMesterComponent.prototype.update = function () {
+            this.GameMenu();
+            this.GameCounDown();
+            this.GamePlaying();
+            this.GameTimesUp();
+        };
+        GameMesterComponent.prototype.GameCounDown = function () {
+            if (GameState != enumGameState.GameCountDown)
+                return;
+            Text1.isVisible = false;
+        };
+        GameMesterComponent.prototype.GameMenu = function () {
+            if (GameState != enumGameState.GameMenu)
+                return;
             this.textUpdate();
+            GameTimeText.isVisible = false;
+            Text1.isVisible = true;
+            Text2.isVisible = false;
+        };
+        GameMesterComponent.prototype.GameTimesUp = function () {
+            if (GameState != enumGameState.GameTimesUp)
+                return;
+            GameTimeText.text = "時間到!";
+            Text2.isVisible = false;
+        };
+        GameMesterComponent.prototype.GamePlaying = function () {
+            if (GameState != enumGameState.GamePlaying)
+                return;
+            Text2.isVisible = true;
+            GameTimeText.isVisible = true;
             this.timeCountDown();
         };
         GameMesterComponent.prototype.textUpdate = function () {
@@ -107,6 +147,8 @@ var PROJECT;
                 '\n' +
                     "Gyroscope (" + OrientationX + " ," + OrientationY + " ," + OrientationZ + ")" +
                     '\n' + "Accelerometer (" + MotionX + " ," + MotionY + " ," + MotionZ + ")";
+            Text2.text =
+                "Gyroscope (" + TargetOrientationX + " ," + TargetOrientationY + " ," + TargetOrientationZ + ")";
             if (GameTime == 0) {
                 GameTimeText.isVisible = false;
             }
@@ -115,16 +157,12 @@ var PROJECT;
             }
         };
         GameMesterComponent.prototype.timeCountDown = function () {
-            if (GameTime <= 0) {
-                GameTimeText.text = "時間到 !";
-                IsGamePlaying = false;
+            if (GameTime > 0) {
+                GameTime -= this.engine.getDeltaTime();
                 return;
             }
-            if (IsGamePlaying == false) {
-                this.resetGame();
-                return;
-            }
-            GameTime -= this.engine.getDeltaTime();
+            GameTimeText.text = "時間到 !";
+            GameState = enumGameState.GameTimesUp;
         };
         GameMesterComponent.prototype.after = function () {
             // After render loop function
@@ -134,14 +172,14 @@ var PROJECT;
         };
         GameMesterComponent.prototype.resetGame = function () {
             GameTime = GameBeginTimeLong * 1000;
-        };
-        GameMesterComponent.prototype.buttonDownFunction = function () {
-            console.log("buttonDownFunction");
-            if (IsGamePlaying)
-                this.resetGame();
+            TargetOrientationX = this.randomIntFromInterval(-360, 360);
+            TargetOrientationY = this.randomIntFromInterval(-360, 360);
+            TargetOrientationZ = this.randomIntFromInterval(-360, 360);
         };
         GameMesterComponent.prototype.startCountdown = function () {
+            GameState = enumGameState.GameCountDown;
             CountDownText.isVisible = true;
+            Text1.isVisible = false;
             CountDownText.text = "3";
             var counter = 3;
             var interval = setInterval(function () {
@@ -152,11 +190,9 @@ var PROJECT;
                     CountDownText.color = "yellow";
                 }
                 if (counter < 0) {
-                    // The code here will run when
-                    // the timer has reached zero.
                     clearInterval(interval);
                     CountDownText.isVisible = false;
-                    IsGamePlaying = true;
+                    GameState = enumGameState.GamePlaying;
                 }
                 ;
             }, 1000);
@@ -176,6 +212,18 @@ var PROJECT;
             Text1.paddingBottom = 320;
             Text1.fontFamily = "Microsoft JhengHei";
             AdvancedTexture.addControl(Text1);
+            Text2 = new BABYLON.GUI.TextBlock();
+            Text2.color = "red";
+            Text2.fontSize = 48;
+            Text2.resizeToFit = true;
+            Text2.outlineWidth = 5;
+            Text2.outlineColor = "white";
+            Text2.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            Text2.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            Text2.verticalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            Text2.paddingBottom = 300;
+            Text2.fontFamily = "Microsoft JhengHei";
+            AdvancedTexture.addControl(Text2);
             GameTimeText = new BABYLON.GUI.TextBlock();
             GameTimeText.color = "white";
             GameTimeText.fontSize = 64;
@@ -201,16 +249,27 @@ var PROJECT;
             CountDownText.isVisible = false;
             CountDownText.text = '3';
             AdvancedTexture.addControl(CountDownText);
-            Button = BABYLON.GUI.Button.CreateSimpleButton("Button", "開始遊戲");
-            Button.width = 0.2;
-            Button.height = "40px";
-            Button.color = "white";
-            Button.background = "green";
-            Button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-            Button.onPointerUpObservable.add(this.startCountdown);
-            Button.onPointerUpObservable.add(this.resetGame);
-            Button.fontFamily = "Microsoft JhengHei";
-            AdvancedTexture.addControl(Button);
+            ButtonStart = BABYLON.GUI.Button.CreateSimpleButton("ButtonStart", "開始遊戲");
+            ButtonStart.width = 0.2;
+            ButtonStart.height = "40px";
+            ButtonStart.color = "white";
+            ButtonStart.background = "green";
+            ButtonStart.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+            ButtonStart.onPointerUpObservable.add(this.startCountdown);
+            ButtonStart.fontFamily = "Microsoft JhengHei";
+            AdvancedTexture.addControl(ButtonStart);
+            ButtonMenu = BABYLON.GUI.Button.CreateSimpleButton("ButtonMenu", "返回目錄");
+            ButtonMenu.width = 0.2;
+            ButtonMenu.height = "40px";
+            ButtonMenu.color = "white";
+            ButtonMenu.background = "green";
+            ButtonMenu.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+            ButtonMenu.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            ButtonMenu.onPointerUpObservable.add(function () {
+                GameState = enumGameState.GameMenu;
+            });
+            ButtonStart.fontFamily = "Microsoft JhengHei";
+            AdvancedTexture.addControl(ButtonMenu);
         };
         GameMesterComponent.prototype.deviceMotion = function () {
             window.addEventListener("deviceorientation", function (event) {
