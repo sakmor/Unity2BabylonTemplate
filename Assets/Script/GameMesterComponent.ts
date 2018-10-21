@@ -1,23 +1,12 @@
-﻿
-/* Babylon Scene Controller Template */
+﻿/* Babylon Scene Controller Template */
 
 module PROJECT {
-    var AdvancedTexture: BABYLON.GUI.AdvancedDynamicTexture;
-    var Text1: BABYLON.GUI.TextBlock, Text2: BABYLON.GUI.TextBlock, GameTimeText: BABYLON.GUI.TextBlock, CountDownText: BABYLON.GUI.TextBlock;
-    var ButtonStart: BABYLON.GUI.Button, ButtonMenu: BABYLON.GUI.Button;
-    var OrientationX, OrientationY, OrientationZ;
+    var AdvancedTexture;
+    var Text1: BABYLON.GUI.TextBlock, Text2: BABYLON.GUI.TextBlock, TargetText: BABYLON.GUI.TextBlock, DiffValueText: BABYLON.GUI.TextBlock, CameraDirText: BABYLON.GUI.TextBlock;
+    var TargetVector3: BABYLON.Vector3;
+    var Score: number;
+    var OrientationX: number, OrientationY: number, OrientationZ: number;
     var MotionX, MotionY, MotionZ;
-    var GameTime: number;
-    var GameBeginTimeLong: number;
-    var GameState: enumGameState;
-    var TargetOrientationX, TargetOrientationY, TargetOrientationZ;
-
-    enum enumGameState {
-        GameMenu,
-        GameCountDown,
-        GamePlaying,
-        GameTimesUp
-    }
 
     export class GameMesterComponent extends BABYLON.MeshComponent {
         public constructor(owner: BABYLON.AbstractMesh, scene: BABYLON.Scene, tick: boolean = true, propertyBag: any = {}) {
@@ -29,81 +18,49 @@ module PROJECT {
         }
 
         protected start(): void {
-            GameState = enumGameState.GameMenu;
-            GameBeginTimeLong = 10;
+            // Start component function
+            Score = 0;
 
+            // GUI
             this.createGUI();
             this.deviceMotion();
-            this.resetGame();
-        }
 
-        protected randomIntFromInterval(min, max): number // min and max included
-        {
-            return Math.floor(Math.random() * (max - min + 1) + min);
+            // 建立目標數值與文字
+            TargetVector3 = new BABYLON.Vector3(30, 30, 30);
+            TargetText.text = TargetVector3.toString();
+
         }
 
         protected update(): void {
+            // Update render loop function
+            Text1.text = "陀螺儀 = X:" + OrientationX + " Y:" + OrientationY + " Z:" + OrientationZ + '\n' + "加速器 = X:" + MotionX + " Y:" + MotionY + " Z:" + MotionZ;
 
-
-            this.GameMenu();
-            this.GameCounDown();
-            this.GamePlaying();
-            this.GameTimesUp();
-        }
-        private GameCounDown(): void {
-            if (GameState != enumGameState.GameCountDown) return;
-            Text1.isVisible = false;
-        }
-
-        private GameMenu(): void {
-            if (GameState != enumGameState.GameMenu) return;
-            this.textUpdate();
-            GameTimeText.isVisible = false;
-            Text1.isVisible = true;
-            Text2.isVisible = false;
-
-        }
-        private GameTimesUp(): void {
-            if (GameState != enumGameState.GameTimesUp) return;
-            GameTimeText.text = "時間到!"
-            Text2.isVisible = false;
-
-        }
-        private GamePlaying(): void {
-            if (GameState != enumGameState.GamePlaying) return;
-            Text2.isVisible = true;
-            GameTimeText.isVisible = true;
-            this.timeCountDown();
+            //檢查數值是否正確
+            this.TargetVector3Checker();
 
 
         }
 
-        protected textUpdate(): void {
-            var t: string = (GameTime * 0.001).toFixed(1);
+        protected TargetVector3Checker(): void {
+            var valueDiff: number;
+            valueDiff = 0;
+            valueDiff += Math.abs(OrientationX - TargetVector3.x);
+            valueDiff += Math.abs(OrientationY - TargetVector3.y);
+            valueDiff += Math.abs(OrientationZ - TargetVector3.z);
 
-            Text1.text =
-                '\n' +
-                "Gyroscope (" + OrientationX + " ," + OrientationY + " ," + OrientationZ + ")" +
-                '\n' + "Accelerometer (" + MotionX + " ," + MotionY + " ," + MotionZ + ")";
 
-            Text2.text =
-                "Gyroscope (" + TargetOrientationX + " ," + TargetOrientationY + " ," + TargetOrientationZ + ")";
+            DiffValueText.text = valueDiff.toString();
+            if (valueDiff < 20) {
+                Score += 1;
+                Text2.text = Score.toString();
 
-            if (GameTime == 0) { GameTimeText.isVisible = false; } else { GameTimeText.text = "遊戲時間：" + t; }
-        }
-
-        protected timeCountDown(): void {
-
-            if (GameTime > 0) {
-                GameTime -= this.engine.getDeltaTime();
-                return;
+                var x = Math.floor(Math.random() * 180) - 0;
+                var y = Math.floor(Math.random() * 180) - 0;
+                var z = Math.floor(Math.random() * 180) - 0;
+                TargetVector3 = new BABYLON.Vector3(x, y, z);
+                TargetText.text = TargetVector3.toString();
             }
-            GameTimeText.text = "時間到 !"
-            GameState = enumGameState.GameTimesUp;
-
         }
-
-
         protected after(): void {
             // After render loop function
         }
@@ -112,119 +69,61 @@ module PROJECT {
             // Destroy component function
         }
 
-        protected resetGame(): void {
-            GameTime = GameBeginTimeLong * 1000;
-            TargetOrientationX = this.randomIntFromInterval(-360, 360);
-            TargetOrientationY = this.randomIntFromInterval(-360, 360);
-            TargetOrientationZ = this.randomIntFromInterval(-360, 360);
-        }
-
-        protected startCountdown(): void {
-            GameState = enumGameState.GameCountDown;
-            CountDownText.isVisible = true;
-            Text1.isVisible = false;
-            CountDownText.text = "3";
-            var counter = 3
-
-            var interval = setInterval(() => {
-                counter--;
-                CountDownText.text = counter.toString();
-                if (counter == 0) {
-                    CountDownText.text = " Start !"
-                    CountDownText.color = "yellow";
-                }
-                if (counter < 0) {
-                    clearInterval(interval);
-                    CountDownText.isVisible = false;
-                    GameState = enumGameState.GamePlaying;
-                };
-            }, 1000);
-        };
-
         protected createGUI(): void {
             AdvancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI");
+
             Text1 = new BABYLON.GUI.TextBlock();
             Text1.color = "white";
-            Text1.fontSize = 48;
+            Text1.fontSize = 64;
             Text1.resizeToFit = true;
             Text1.outlineWidth = 5;
             Text1.outlineColor = "black";
-
-            Text1.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            Text1.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            Text1.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-            Text1.paddingBottom = 320;
-            Text1.fontFamily = "Microsoft JhengHei";
+            Text1.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            Text1.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
             AdvancedTexture.addControl(Text1);
 
+
             Text2 = new BABYLON.GUI.TextBlock();
-            Text2.color = "red";
-            Text2.fontSize = 48;
+            Text2.color = "white";
+            Text2.fontSize = 64;
             Text2.resizeToFit = true;
             Text2.outlineWidth = 5;
-            Text2.outlineColor = "white";
-
-            Text2.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            Text2.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            Text2.verticalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            Text2.paddingBottom = 300;
-            Text2.fontFamily = "Microsoft JhengHei";
+            Text2.outlineColor = "black";
+            Text2.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            Text2.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
             AdvancedTexture.addControl(Text2);
+            Text2.text = Score.toString();
 
-            GameTimeText = new BABYLON.GUI.TextBlock();
-            GameTimeText.color = "white";
-            GameTimeText.fontSize = 64;
-            GameTimeText.resizeToFit = true;
-            GameTimeText.outlineWidth = 5;
-            GameTimeText.outlineColor = "black";
+            TargetText = new BABYLON.GUI.TextBlock();
+            TargetText.color = "white";
+            TargetText.fontSize = 64;
+            TargetText.resizeToFit = true;
+            TargetText.outlineWidth = 5;
+            TargetText.outlineColor = "green";
+            TargetText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            TargetText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+            AdvancedTexture.addControl(TargetText);
+            TargetText.text = Score.toString();
 
-            GameTimeText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            GameTimeText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            GameTimeText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            GameTimeText.fontFamily = "Microsoft JhengHei";
-            AdvancedTexture.addControl(GameTimeText);
+            DiffValueText = new BABYLON.GUI.TextBlock();
+            DiffValueText.color = "white";
+            DiffValueText.fontSize = 64;
+            DiffValueText.resizeToFit = true;
+            DiffValueText.outlineWidth = 5;
+            DiffValueText.outlineColor = "black";
+            DiffValueText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            DiffValueText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+            AdvancedTexture.addControl(DiffValueText);
 
-            CountDownText = new BABYLON.GUI.TextBlock();
-            CountDownText.color = "red";
-            CountDownText.fontSize = 420;
-            CountDownText.fontFamily = "fantasy";
-            CountDownText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            CountDownText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            CountDownText.outlineWidth = 20;
-            CountDownText.outlineColor = "white";
-            CountDownText.shadowBlur = 50;
-            CountDownText.shadowOffsetX = 10;
-            CountDownText.shadowOffsetY = 10;
-            CountDownText.isVisible = false;
-
-            CountDownText.text = '3';
-            AdvancedTexture.addControl(CountDownText);
-
-            ButtonStart = BABYLON.GUI.Button.CreateSimpleButton("ButtonStart", "開始遊戲")
-            ButtonStart.width = 0.2;
-            ButtonStart.height = "40px";
-            ButtonStart.color = "white";
-            ButtonStart.background = "green";
-            ButtonStart.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-            ButtonStart.onPointerUpObservable.add(this.startCountdown);
-
-            ButtonStart.fontFamily = "Microsoft JhengHei";
-            AdvancedTexture.addControl(ButtonStart);
-
-            ButtonMenu = BABYLON.GUI.Button.CreateSimpleButton("ButtonMenu", "返回目錄")
-            ButtonMenu.width = 0.2;
-            ButtonMenu.height = "40px";
-            ButtonMenu.color = "white";
-            ButtonMenu.background = "green";
-            ButtonMenu.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            ButtonMenu.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            ButtonMenu.onPointerUpObservable.add(function () {
-                GameState = enumGameState.GameMenu;
-            });
-
-            ButtonStart.fontFamily = "Microsoft JhengHei";
-            AdvancedTexture.addControl(ButtonMenu);
-
+            CameraDirText = new BABYLON.GUI.TextBlock();
+            CameraDirText.color = "white";
+            CameraDirText.fontSize = 64;
+            CameraDirText.resizeToFit = true;
+            CameraDirText.outlineWidth = 5;
+            CameraDirText.outlineColor = "black";
+            CameraDirText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            CameraDirText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+            AdvancedTexture.addControl(CameraDirText);
         }
 
         protected deviceMotion(): void {
