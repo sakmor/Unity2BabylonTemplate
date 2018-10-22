@@ -43,22 +43,21 @@ module PROJECT {
 
         protected TargetVector3Checker(): void {
             var valueDiff: number;
-            valueDiff = 0;
-            valueDiff += Math.abs(OrientationX - TargetVector3.x);
-            valueDiff += Math.abs(OrientationY - TargetVector3.y);
-            valueDiff += Math.abs(OrientationZ - TargetVector3.z);
+            var Orientation = new BABYLON.Vector3(OrientationX, OrientationY, OrientationZ);
+            valueDiff = Math.round(BABYLON.Vector3.Distance(Orientation, TargetVector3));
 
-
-            DiffValueText.text = valueDiff.toString();
-            if (valueDiff < 20) {
+            DiffValueText.text = "分數:" + valueDiff.toString() + '\n' + Score;
+            if (valueDiff < 15) {
                 Score += 1;
                 Text2.text = Score.toString();
 
-                var x = Math.floor(Math.random() * 180) - 0;
-                var y = Math.floor(Math.random() * 180) - 0;
-                var z = Math.floor(Math.random() * 180) - 0;
+                var x = Math.floor(Math.random() * 128) - 0;
+                var y = Math.floor(Math.random() * 128) - 0;
+                var z = Math.floor(Math.random() * 128) - 0;
                 TargetVector3 = new BABYLON.Vector3(x, y, z);
                 TargetText.text = TargetVector3.toString();
+
+                window.navigator.vibrate(1000);
             }
         }
         protected after(): void {
@@ -81,7 +80,6 @@ module PROJECT {
             Text1.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             Text1.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
             AdvancedTexture.addControl(Text1);
-
 
             Text2 = new BABYLON.GUI.TextBlock();
             Text2.color = "white";
@@ -111,7 +109,7 @@ module PROJECT {
             DiffValueText.resizeToFit = true;
             DiffValueText.outlineWidth = 5;
             DiffValueText.outlineColor = "black";
-            DiffValueText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            DiffValueText.horizontalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
             DiffValueText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
             AdvancedTexture.addControl(DiffValueText);
 

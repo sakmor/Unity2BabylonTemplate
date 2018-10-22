@@ -107,19 +107,18 @@ var PROJECT;
         };
         GameMesterComponent.prototype.TargetVector3Checker = function () {
             var valueDiff;
-            valueDiff = 0;
-            valueDiff += Math.abs(OrientationX - TargetVector3.x);
-            valueDiff += Math.abs(OrientationY - TargetVector3.y);
-            valueDiff += Math.abs(OrientationZ - TargetVector3.z);
-            DiffValueText.text = valueDiff.toString();
-            if (valueDiff < 20) {
+            var Orientation = new BABYLON.Vector3(OrientationX, OrientationY, OrientationZ);
+            valueDiff = Math.round(BABYLON.Vector3.Distance(Orientation, TargetVector3));
+            DiffValueText.text = "分數:" + valueDiff.toString() + '\n' + Score;
+            if (valueDiff < 15) {
                 Score += 1;
                 Text2.text = Score.toString();
-                var x = Math.floor(Math.random() * 180) - 0;
-                var y = Math.floor(Math.random() * 180) - 0;
-                var z = Math.floor(Math.random() * 180) - 0;
+                var x = Math.floor(Math.random() * 128) - 0;
+                var y = Math.floor(Math.random() * 128) - 0;
+                var z = Math.floor(Math.random() * 128) - 0;
                 TargetVector3 = new BABYLON.Vector3(x, y, z);
                 TargetText.text = TargetVector3.toString();
+                window.navigator.vibrate(1000);
             }
         };
         GameMesterComponent.prototype.after = function () {
@@ -165,7 +164,7 @@ var PROJECT;
             DiffValueText.resizeToFit = true;
             DiffValueText.outlineWidth = 5;
             DiffValueText.outlineColor = "black";
-            DiffValueText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            DiffValueText.horizontalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
             DiffValueText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
             AdvancedTexture.addControl(DiffValueText);
             CameraDirText = new BABYLON.GUI.TextBlock();
