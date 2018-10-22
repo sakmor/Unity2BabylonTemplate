@@ -15,6 +15,7 @@ var __extends = (this && this.__extends) || (function () {
 var PROJECT;
 /* Babylon Scene Controller Template */
 (function (PROJECT) {
+    var UpSound;
     var AdvancedTexture;
     var DeviceText, ScoreText, TargetText, DiffValueText, CameraDirText;
     var TargetVector3;
@@ -32,7 +33,8 @@ var PROJECT;
             // Scene execute when ready
         };
         GameMesterComponent.prototype.start = function () {
-            navigator.vibrate(1000);
+            var UpSound = new BABYLON.Sound("Music", "scenes/up.mp3", this.scene, null, { loop: false, autoplay: true });
+            UpSound.play();
             // Start component function
             Score = 0;
             // GUI
@@ -52,7 +54,7 @@ var PROJECT;
             var valueDiff;
             var Orientation = new BABYLON.Vector3(OrientationX, OrientationY, OrientationZ);
             valueDiff = Math.round(BABYLON.Vector3.Distance(Orientation, TargetVector3));
-            DiffValueText.text = "分數:" + valueDiff.toString() + '\n' + Score;
+            DiffValueText.text = "距離:" + valueDiff.toString() + '\n' + "分數:" + Score;
             if (valueDiff < 25) {
                 Score += 1;
                 ScoreText.text = Score.toString();
@@ -61,7 +63,8 @@ var PROJECT;
                 var z = Math.floor(Math.random() * 128) - 0;
                 TargetVector3 = new BABYLON.Vector3(x, y, z);
                 TargetText.text = TargetVector3.toString();
-                navigator.vibrate(1000);
+                UpSound.play();
+                // navigator.vibrate(1000);
             }
         };
         GameMesterComponent.prototype.after = function () {

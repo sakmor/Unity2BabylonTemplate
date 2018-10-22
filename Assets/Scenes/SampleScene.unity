@@ -413,6 +413,7 @@ GameObject:
   m_Component:
   - component: {fileID: 413281531}
   - component: {fileID: 413281530}
+  - component: {fileID: 413281532}
   m_Layer: 0
   m_Name: GameMaster
   m_TagString: Untagged
@@ -446,3 +447,34 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &413281532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 413281529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcd1ca7833467417cbb3dab989be46f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  babylonClass: BABYLON.SceneComponent
+  audioClip: {fileID: 8300000, guid: 83ecd3f85f13bda41a41ebb8350cb21d, type: 3}
+  soundTrack:
+    volume: 1
+    playbackRate: 1
+    autoplay: 0
+    loop: 0
+    soundTrackId: 1011
+    spatialSound: 0
+    position: {x: 0, y: 0, z: 0}
+    refDistance: 1
+    rolloffFactor: 1
+    maxDistance: 100
+    distanceModel: linear
+    panningModel: equalpower
+    isDirectional: 0
+    coneInnerAngle: 360
+    coneOuterAngle: 360
+    coneOuterGain: 0
+    directionToMesh: {x: 1, y: 0, z: 0}

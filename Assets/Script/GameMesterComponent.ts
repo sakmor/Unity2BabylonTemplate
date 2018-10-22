@@ -1,6 +1,7 @@
 ﻿/* Babylon Scene Controller Template */
 
 module PROJECT {
+	var UpSound: BABYLON.Sound;
 	var AdvancedTexture;
 	var DeviceText: BABYLON.GUI.TextBlock, ScoreText: BABYLON.GUI.TextBlock, TargetText: BABYLON.GUI.TextBlock, DiffValueText: BABYLON.GUI.TextBlock, CameraDirText: BABYLON.GUI.TextBlock;
 	var TargetVector3: BABYLON.Vector3;
@@ -18,7 +19,8 @@ module PROJECT {
 		}
 
 		protected start(): void {
-
+			var UpSound = new BABYLON.Sound("Music", "scenes/up.mp3", this.scene, null, { loop: false, autoplay: true });
+			UpSound.play();
 			// Start component function
 			Score = 0;
 
@@ -33,7 +35,6 @@ module PROJECT {
 		}
 
 		protected update(): void {
-
 			// Update render loop function
 			DeviceText.text = "陀螺儀 = X:" + OrientationX + " Y:" + OrientationY + " Z:" + OrientationZ + '\n' + "加速器 = X:" + MotionX + " Y:" + MotionY + " Z:" + MotionZ;
 
@@ -58,8 +59,8 @@ module PROJECT {
 				var z = Math.floor(Math.random() * 128) - 0;
 				TargetVector3 = new BABYLON.Vector3(x, y, z);
 				TargetText.text = TargetVector3.toString();
-
-				navigator.vibrate(1000);
+				UpSound.play();
+				// navigator.vibrate(1000);
 			}
 		}
 		protected after(): void {
