@@ -50,7 +50,7 @@ module PROJECT {
 			valueDiff = Math.round(BABYLON.Vector3.Distance(Orientation, TargetVector3));
 
 			DiffValueText.text = "距離:" + valueDiff.toString() + '\n' + "分數:" + Score;
-			if (valueDiff < 25) {
+			if (valueDiff < 50) {
 				Score += 1;
 				ScoreText.text = Score.toString();
 
@@ -59,8 +59,7 @@ module PROJECT {
 				var z = Math.floor(Math.random() * 128) - 0;
 				TargetVector3 = new BABYLON.Vector3(x, y, z);
 				TargetText.text = TargetVector3.toString();
-				UpSound.play();
-				// navigator.vibrate(1000);
+				if (UpSound.isPlaying == false) UpSound.play();
 			}
 		}
 		protected after(): void {
