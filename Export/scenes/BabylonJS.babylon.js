@@ -74,7 +74,7 @@ var PROJECT;
 /* Babylon Scene Controller Template */
 (function (PROJECT) {
     var AdvancedTexture;
-    var Text1, Text2, TargetText, DiffValueText, CameraDirText;
+    var DeviceText, ScoreText, TargetText, DiffValueText, CameraDirText;
     var TargetVector3;
     var Score;
     var OrientationX, OrientationY, OrientationZ;
@@ -90,6 +90,7 @@ var PROJECT;
             // Scene execute when ready
         };
         GameMesterComponent.prototype.start = function () {
+            navigator.vibrate(1000);
             // Start component function
             Score = 0;
             // GUI
@@ -101,7 +102,7 @@ var PROJECT;
         };
         GameMesterComponent.prototype.update = function () {
             // Update render loop function
-            Text1.text = "陀螺儀 = X:" + OrientationX + " Y:" + OrientationY + " Z:" + OrientationZ + '\n' + "加速器 = X:" + MotionX + " Y:" + MotionY + " Z:" + MotionZ;
+            DeviceText.text = "陀螺儀 = X:" + OrientationX + " Y:" + OrientationY + " Z:" + OrientationZ + '\n' + "加速器 = X:" + MotionX + " Y:" + MotionY + " Z:" + MotionZ;
             //檢查數值是否正確
             this.TargetVector3Checker();
         };
@@ -110,15 +111,15 @@ var PROJECT;
             var Orientation = new BABYLON.Vector3(OrientationX, OrientationY, OrientationZ);
             valueDiff = Math.round(BABYLON.Vector3.Distance(Orientation, TargetVector3));
             DiffValueText.text = "分數:" + valueDiff.toString() + '\n' + Score;
-            if (valueDiff < 15) {
+            if (valueDiff < 25) {
                 Score += 1;
-                Text2.text = Score.toString();
+                ScoreText.text = Score.toString();
                 var x = Math.floor(Math.random() * 128) - 0;
                 var y = Math.floor(Math.random() * 128) - 0;
                 var z = Math.floor(Math.random() * 128) - 0;
                 TargetVector3 = new BABYLON.Vector3(x, y, z);
                 TargetText.text = TargetVector3.toString();
-                window.navigator.vibrate(1000);
+                navigator.vibrate(1000);
             }
         };
         GameMesterComponent.prototype.after = function () {
@@ -129,25 +130,26 @@ var PROJECT;
         };
         GameMesterComponent.prototype.createGUI = function () {
             AdvancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI");
-            Text1 = new BABYLON.GUI.TextBlock();
-            Text1.color = "white";
-            Text1.fontSize = 64;
-            Text1.resizeToFit = true;
-            Text1.outlineWidth = 5;
-            Text1.outlineColor = "black";
-            Text1.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-            Text1.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            AdvancedTexture.addControl(Text1);
-            Text2 = new BABYLON.GUI.TextBlock();
-            Text2.color = "white";
-            Text2.fontSize = 64;
-            Text2.resizeToFit = true;
-            Text2.outlineWidth = 5;
-            Text2.outlineColor = "black";
-            Text2.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            Text2.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-            AdvancedTexture.addControl(Text2);
-            Text2.text = Score.toString();
+            DeviceText = new BABYLON.GUI.TextBlock();
+            DeviceText.color = "white";
+            DeviceText.fontSize = 64;
+            DeviceText.resizeToFit = true;
+            DeviceText.outlineWidth = 5;
+            DeviceText.outlineColor = "black";
+            DeviceText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            DeviceText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+            AdvancedTexture.addControl(DeviceText);
+            DeviceText.paddingBottom = 300;
+            ScoreText = new BABYLON.GUI.TextBlock();
+            ScoreText.color = "white";
+            ScoreText.fontSize = 64;
+            ScoreText.resizeToFit = true;
+            ScoreText.outlineWidth = 5;
+            ScoreText.outlineColor = "black";
+            ScoreText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            ScoreText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+            AdvancedTexture.addControl(ScoreText);
+            ScoreText.text = Score.toString();
             TargetText = new BABYLON.GUI.TextBlock();
             TargetText.color = "white";
             TargetText.fontSize = 64;
@@ -155,7 +157,8 @@ var PROJECT;
             TargetText.outlineWidth = 5;
             TargetText.outlineColor = "green";
             TargetText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            TargetText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+            TargetText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+            TargetText.paddingBottom = 500;
             AdvancedTexture.addControl(TargetText);
             TargetText.text = Score.toString();
             DiffValueText = new BABYLON.GUI.TextBlock();
